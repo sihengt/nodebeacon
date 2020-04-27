@@ -14,3 +14,5 @@ This repo consists of two parts:
 
 ![super rudimentary implementation](https://github.com/seeeheng/nodebeacon/blob/master/rudimentary-implementation.gif)
 *First try, mercy please.*
+=======
+# trilateration

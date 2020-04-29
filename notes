@@ -1,0 +1,22 @@
+peripheral discovered (3ca308ac7f2e with address <3c:a3:08:ac:7f:2e, public>, connectable true, RSSI -70:
+	hello my local name is:
+		Ghostyu
+	can I interest you in any of the following advertised services:
+		[]
+	here is my service data:
+		"180a": "47593ca308ac7f2e0000000064ffffff"
+	here is my manufacturer data:
+		"4c000215e2c56db5dffb48d2b060d0f5a71096e000000000be"
+
+peripheral id: 3ca308ac7f2e
+peripheral address: 3c:a3:08:ac:7f:2e, public
+local name: Ghostyu
+service data: 
+
+E2C56DB5-DFFB-48D2-B060-D0F5A71096E0
+E2C56DB5DFFB48D2B060D0F5A71096E0
+13333333-3333-3333-3333-333333333337
+06 00 01 09 2002 8980 31f9 8f03 5010 bade c847 5697 d6c6 50b2 391d 6aa4 75
+
+found device:  3ca308ac7f2e   Ghostyu   -68
+distance calculated:  1.24360943099393

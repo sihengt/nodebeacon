@@ -9,6 +9,7 @@
   "author": "me",
   "license": "ISC",
   "dependencies": {
-    "@abandonware/noble": "^1.9.2-8"
+    "@abandonware/noble": "^1.9.2-8",
+    "node-beacon-scanner": "^0.2.2"
   }
 }

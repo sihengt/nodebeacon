@@ -1,0 +1,14 @@
+{
+  "name": "nodebeacon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "me",
+  "license": "ISC",
+  "dependencies": {
+    "@abandonware/noble": "^1.9.2-8"
+  }
+}

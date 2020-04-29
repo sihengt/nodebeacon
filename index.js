@@ -1,12 +1,33 @@
 const noble = require('@abandonware/noble');
-const ghostyu = 'E2C56DB5DFFB48D2B060D0F5A71096E0';
+const fs = require('fs');
+const beacon1mac = '3ca308ac7f2e';
+const beacon2mac = '3ca308ac9b69';
+const u = 3.72;
 
 class Beacon {
   constructor(mac){
     this.id = mac;
     this.memory = new Object();
   }
+  have_memory(time){
+    if(this.memory[time]){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  get_memory(time){
+    if (this.memory[time]){
+      return this.memory[time];
+    }
+    else {
+      return -1;
+    }
+  }
   update_memory(time, distance){
+    // todo: this is not even a proper average man, pls wake up. ok la but you only slept 4 hours so you get free pass.
     if(this.memory[time]){
       var previous_value = this.memory[time];
       var new_value = (distance + previous_value)/2;
@@ -16,7 +37,7 @@ class Beacon {
       this.memory[time] = distance;
     }
   console.log("Updated memory ", this.memory);
-  }    
+  }
 }
 
 Beacon1 = new Beacon("3ca308ac7f2e");
@@ -44,8 +65,9 @@ noble.on('discover', function (peripheral) {
     console.log('Current unix time: ', current_time);
     console.log('found device: ', macAddress,' ',localName,' ',rssi);
     console.log('distance calculated: ', calculatedDistance);    
-    console.log();
     Beacon1.update_memory(current_time,calculatedDistance);
+    trilat(current_time);
+    console.log();
   }
 
   if (macAddress == "3ca308ac9b69"){
@@ -53,23 +75,36 @@ noble.on('discover', function (peripheral) {
     console.log('Current unix time: ', current_time);
     console.log('found device: ', macAddress,' ',localName,' ',rssi);
     console.log('distance calculated: ', calculatedDistance); 
-    console.log();
     Beacon2.update_memory(current_time, calculatedDistance);
+    trilat(current_time);
+    console.log();
   }
 
 
-function updateDistance(storage,current_time,distance){
-  if(storage[current_time]){
-    previous_value = storage[current_time];
-    new_value = (distance + previous_value)/2;
-    storage[current_time] = new_value;
+function trilat(time){
+  if ( (Beacon1.have_memory(time)) && (Beacon2.have_memory(time)) ){
+    console.log('ready to trilat the fuck out of this shit.');
+    var r1 = Beacon1.get_memory(time); 
+    var r2 = Beacon2.get_memory(time);
+
+    var new_x = (r1**2 - r2**2 + u**2) / (2*u)
+    console.log("R1: ", r1, "R2: ", r2, "new_x: ", new_x);
+    
+    var temp = r1**2 - new_x**2;
+    if(temp<0){
+      temp=0;
+    }
+    var new_y = (Math.sqrt(temp))
+    console.log("New x: ", new_x);
+    console.log("New y: ", new_y);
+    let position = {
+      x:new_x,
+      y:new_y
+    };
+    let data = JSON.stringify(position);
+    fs.writeFileSync('current_position.json', data);
   }
-  else{
-    storage[current_time]=distance;
-  }
-  return storage
 }
-
 
   // console.log(`peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`);
   // console.log('\thello my local name is:');
@@ -107,4 +142,3 @@ function calculateDistance(txPower,rssi){
     return (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
   }
 }
-

@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "beefy app.js:bundle.js --live"
+    "start": "beefy app.js:bundle.js --live",
+    "bundle": "browserify app.js -o bundle.js"
   },
   "author": "me",
   "license": "ISC",
@@ -14,6 +15,7 @@
     "beefy": "^2.1.8",
     "browserify": "^16.5.1",
     "leaflet": "^1.6.0",
-    "node-beacon-scanner": "^0.2.2"
+    "node-beacon-scanner": "^0.2.2",
+    "ws": "^7.2.5"
   }
 }

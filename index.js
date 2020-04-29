@@ -1,6 +1,26 @@
 const noble = require('@abandonware/noble');
 const ghostyu = 'E2C56DB5DFFB48D2B060D0F5A71096E0';
 
+class Beacon {
+  constructor(mac){
+    this.id = mac;
+    this.memory = new Object();
+  }
+  update_memory(time, distance){
+    if(this.memory[time]){
+      var previous_value = this.memory[time];
+      var new_value = (distance + previous_value)/2;
+      this.memory[time] = new_value;
+    }
+    else {
+      this.memory[time] = distance;
+    }
+  console.log("Updated memory ", this.memory);
+  }    
+}
+
+Beacon1 = new Beacon("3ca308ac7f2e");
+Beacon2 = new Beacon("3ca308ac9b69");
 
 noble.on('stateChange', function (state) {
   if (state === 'poweredOn') {
@@ -12,19 +32,43 @@ noble.on('stateChange', function (state) {
   }
 });
 
-
-
 noble.on('discover', function (peripheral) {
   var macAddress = peripheral.uuid;
   var rssi = peripheral.rssi;
   var localName = peripheral.advertisement.localName;
   var calculatedDistance = calculateDistance(-66,rssi);
-  if (macAddress == "3ca308ac7f2e" | macAddress =="3ca308ac9b69"){
+  var current_time = Math.round((new Date()).getTime()/1000);
+
+  if (macAddress == "3ca308ac7f2e"){
+    console.log('Beacon 1');
+    console.log('Current unix time: ', current_time);
     console.log('found device: ', macAddress,' ',localName,' ',rssi);
     console.log('distance calculated: ', calculatedDistance);    
     console.log();
+    Beacon1.update_memory(current_time,calculatedDistance);
   }
 
+  if (macAddress == "3ca308ac9b69"){
+    console.log('Beacon 2');
+    console.log('Current unix time: ', current_time);
+    console.log('found device: ', macAddress,' ',localName,' ',rssi);
+    console.log('distance calculated: ', calculatedDistance); 
+    console.log();
+    Beacon2.update_memory(current_time, calculatedDistance);
+  }
+
+
+function updateDistance(storage,current_time,distance){
+  if(storage[current_time]){
+    previous_value = storage[current_time];
+    new_value = (distance + previous_value)/2;
+    storage[current_time] = new_value;
+  }
+  else{
+    storage[current_time]=distance;
+  }
+  return storage
+}
 
 
   // console.log(`peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`);

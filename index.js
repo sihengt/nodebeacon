@@ -83,7 +83,7 @@ noble.on('discover', function (peripheral) {
 
 function trilat(time){
   if ( (Beacon1.have_memory(time)) && (Beacon2.have_memory(time)) ){
-    console.log('ready to trilat the fuck out of this shit.');
+    console.log('ready to trilat.');
     var r1 = Beacon1.get_memory(time); 
     var r2 = Beacon2.get_memory(time);
 

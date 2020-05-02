@@ -1,5 +1,36 @@
 const noble = require('@abandonware/noble');
 const fs = require('fs');
+// const express = require('express');
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
+// Configuring express for setting up API.
+// const app = express()
+const port = 9000
+
+// app.get('/', (req, res) => res.send("Hello World!"))
+// app.get('/api', function(req, res){
+//   res.json({lat: 364,
+//             lng: 227})
+// })
+
+http.listen(port, () => {
+  console.log(`listening on *:${port}`)
+})
+
+// let position = {
+//   lat: 364,
+//   lng: 227}
+// io.on('connection', (socket) => {
+//   console.log('Connected. Now transmitting.')
+//   socket.emit('updateData', position);
+// })
+
+// SYNTAX: socket.emit('YourEvent', myObject);
+
+
+// Setting up beacons.
 const beacon1mac = '3ca308ac7f2e';
 const beacon2mac = '3ca308ac9b69';
 const u = 3.72;
@@ -95,14 +126,33 @@ function trilat(time){
       temp=0;
     }
     var new_y = (Math.sqrt(temp))
+
+    console.log("Before x: ", new_x);
+    console.log("Before y: ", new_y);
+
+    new_x = 182 + (new_x / 0.014758)
+    new_y = 710 + (new_y / 0.014758)
+
     console.log("New x: ", new_x);
     console.log("New y: ", new_y);
+
     let position = {
-      x:new_x,
-      y:new_y
+      lng:Math.round(new_x),
+      lat:Math.round(new_y)
     };
-    let data = JSON.stringify(position);
-    fs.writeFileSync('current_position.json', data);
+
+    io.emit('updateData', position);
+    // io.on('connection', (socket) => {
+    //   console.log('Updating.')
+    //   console.log(position)
+    //   socket.emit('updateData', position);
+    // })  
+    
+    // app.get('/api', function(req, res){
+    // res.json({lat: new_y,
+    //           lng: new_x}
+    //         )
+    // })
   }
 }
 

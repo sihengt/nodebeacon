@@ -2,8 +2,13 @@ import React from "react";
 import { Map, Marker, Circle, Popup, Tooltip, ImageOverlay} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
+import roomPicture from './room.jpg'
+import socketIOClient from "socket.io-client";
 
 delete L.Icon.Default.prototype._getIconUrl;
+
+const ENDPOINT = "http://127.0.0.1:9000";
+
 
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
@@ -11,22 +16,41 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-type State = {
-  lat: number,
-  lng: number,
-  zoom: number,
-};
+class HomeMap extends React.Component {
+  // use a hook instead to receive the response.
+  constructor(props){
+    super(props);
+    this.state = {
+      error:null,
+      isLoaded: false,
+      lat: 364, // these coordinates are center of the room. 
+      lng: 227,
+      zoom: -5,
+    };
+  }
 
-class HomeMap extends React.Component<{}, State>{
-  state = {
-    lat: 364,
-    lng: 227,
-    zoom: -5,
+  componentDidMount(){
+    console.log("About to fetch.")
+    const socket = socketIOClient(ENDPOINT)
+    socket.on("updateData", data => {
+      console.log(data);
+      this.setState({
+        isLoaded: true,
+        lat: data.lat,
+        lng: data.lng,
+      });
+    });
+  }
+
+  componentWillUnmount(){
+    const socket = socketIOClient(ENDPOINT)
+    socket.close();
   }
 
   render() {
+    const center = L.latLng([364, 227])
     const position = [this.state.lat, this.state.lng]
-    const filepath = "https://raw.githubusercontent.com/seeeheng/nodebeacon/master/room.jpg"
+    const filepath = roomPicture;
     const corner1 = L.latLng([0,0])
     const corner2 = L.latLng([728,454])
     const bounds = L.latLngBounds(corner2,corner1)
@@ -35,8 +59,9 @@ class HomeMap extends React.Component<{}, State>{
     const beaconRadius = 4;
     const beacon1Center = L.latLng([710,182]);
     const beacon2Center = L.latLng([710,434]);
+
     return (
-      <Map center={position} zoom={this.state.zoom} crs={L.CRS.Simple}>
+      <Map center={center} zoom={this.state.zoom} crs={L.CRS.Simple}>
         <ImageOverlay
           url={filepath}
           bounds={bounds}
@@ -65,8 +90,7 @@ class HomeMap extends React.Component<{}, State>{
             BEACON 2 (9b69)
           </Tooltip>
         </Circle>
-
-
+        
       </Map>
     )
   }

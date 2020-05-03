@@ -2,30 +2,39 @@ import React from "react";
 import { Map, Marker, Circle, Popup, Tooltip, ImageOverlay} from "react-leaflet";
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import roomPicture from './room.jpg'
+import roomPicture from './room.png'
+import livingRoomPicture from './livingroom.png'
 import socketIOClient from "socket.io-client";
-
-delete L.Icon.Default.prototype._getIconUrl;
 
 const ENDPOINT = "http://127.0.0.1:9000";
 
-
+// Some initializing setup due to bugs in react-leaflet. This allows icons to properly show.
+delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
     iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
     iconUrl: require('leaflet/dist/images/marker-icon.png'),
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
+// Initializing function to add more beacons.
+function Beacon(props){
+  return (
+    <Circle
+      center={props.center}
+      radius={props.radius}>
+      <Tooltip direction='right' permanent>{props.name}</Tooltip>
+    </Circle>
+  );
+}
+
 class HomeMap extends React.Component {
-  // use a hook instead to receive the response.
   constructor(props){
     super(props);
     this.state = {
-      error:null,
-      isLoaded: false,
       lat: 364, // these coordinates are center of the room. 
       lng: 227,
       zoom: -5,
+      yourRoom:true
     };
   }
 
@@ -35,9 +44,9 @@ class HomeMap extends React.Component {
     socket.on("updateData", data => {
       console.log(data);
       this.setState({
-        isLoaded: true,
         lat: data.lat,
         lng: data.lng,
+        yourRoom: data.yourRoom
       });
     });
   }
@@ -47,51 +56,61 @@ class HomeMap extends React.Component {
     socket.close();
   }
 
+  onChangeValue = (event) => {
+    var isTrue = (event.target.value === 'true');
+    this.setState({
+      yourRoom: isTrue,
+    });
+    console.log(this.state)
+  }
+
   render() {
-    const center = L.latLng([364, 227])
+    const center = this.state.yourRoom? L.latLng([364, 227]) : L.latLng([379, 162])
     const position = [this.state.lat, this.state.lng]
-    const filepath = roomPicture;
+    const filepath = this.state.yourRoom ? roomPicture : livingRoomPicture;
+    
     const corner1 = L.latLng([0,0])
-    const corner2 = L.latLng([728,454])
+    const corner2 = this.state.yourRoom ? L.latLng([728,454]) : L.latLng([758,324])
     const bounds = L.latLngBounds(corner2,corner1)
 
     // SETTING UP BEACONS.
     const beaconRadius = 4;
-    const beacon1Center = L.latLng([710,182]);
-    const beacon2Center = L.latLng([710,434]);
+    const beacon1Center = this.state.yourRoom ? L.latLng([710,272]) : L.latLng([0,0]);
+    const beacon2Center = this.state.yourRoom ? L.latLng([710,20]) : L.latLng([0,0]);
 
     return (
-      <Map center={center} zoom={this.state.zoom} crs={L.CRS.Simple}>
-        <ImageOverlay
-          url={filepath}
-          bounds={bounds}
-        />
-        <Marker position={position}>
-          <Popup>
-            You are here. <br />
-          </Popup>
-        </Marker>
+      <div className="UI">
+        <div onChange={this.onChangeValue} className="buttoncontainer">
+          <label className="buttons">
+            <input type="radio" value={false} name="where" /> Living Room
+            <input type="radio" value={true} name="where" /> Room
+          </label>
+        </div>        
+        <div className="map">
+          <Map 
+            center={center} 
+            scrollWheelZoom={false}
+            doubleClickZoom={false} 
+            zoom={this.state.zoom} 
+            crs={L.CRS.Simple}>
+            
+            <ImageOverlay
+              url={filepath}
+              bounds={bounds}
+            />
 
-        <Circle
-          center={beacon1Center} 
-          radius={beaconRadius}>
-          <Tooltip 
-            direction="right" 
-            permanent>
-            BEACON 1 (7f2e)
-          </Tooltip>
-        </Circle>
-        <Circle
-          center={beacon2Center}
-          radius={beaconRadius}>
-          <Tooltip 
-            direction="right" 
-            permanent>
-            BEACON 2 (9b69)
-          </Tooltip>
-        </Circle>
-        
-      </Map>
+            <Marker position={position}>
+              <Popup>
+                You are here. <br />
+              </Popup>
+            </Marker>
+
+            <Beacon center={beacon1Center} radius={beaconRadius} name="BEACON 1 (7f2e)"/>
+            <Beacon center={beacon2Center} radius={beaconRadius} name="BEACON 2 (9b69)"/>
+         
+          </Map>
+        </div>
+      </div>
     )
   }
 }

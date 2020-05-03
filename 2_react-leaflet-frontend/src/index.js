@@ -1,9 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import HomeMap from "./Map";
-import "./Index.css"
+import "./Index.css";
 import 'leaflet/dist/leaflet.css';
-
 
 ReactDOM.render(
   <HomeMap/>,

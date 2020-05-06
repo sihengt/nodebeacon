@@ -46,7 +46,7 @@ class HomeMap extends React.Component {
       this.setState({
         lat: data.lat,
         lng: data.lng,
-        yourRoom: data.yourRoom
+        // yourRoom: data.yourRoom
       });
     });
   }
@@ -65,25 +65,26 @@ class HomeMap extends React.Component {
   }
 
   render() {
-    const center = this.state.yourRoom? L.latLng([364, 227]) : L.latLng([379, 162])
+    const center = this.state.yourRoom? L.latLng([364, 227]) : L.latLng([303, 160.5])
     const position = [this.state.lat, this.state.lng]
     const filepath = this.state.yourRoom ? roomPicture : livingRoomPicture;
     
     const corner1 = L.latLng([0,0])
-    const corner2 = this.state.yourRoom ? L.latLng([728,454]) : L.latLng([758,324])
+    const corner2 = this.state.yourRoom ? L.latLng([728,454]) : L.latLng([606,321])
     const bounds = L.latLngBounds(corner2,corner1)
 
     // SETTING UP BEACONS.
     const beaconRadius = 4;
-    const beacon1Center = this.state.yourRoom ? L.latLng([710,272]) : L.latLng([0,0]);
-    const beacon2Center = this.state.yourRoom ? L.latLng([710,20]) : L.latLng([0,0]);
+    const beacon1Center = this.state.yourRoom ? L.latLng([710,272]) : L.latLng([23.5,300]);
+    const beacon2Center = this.state.yourRoom ? L.latLng([710,20]) : L.latLng([236,21]);
+    const beacon3Center = this.state.yourRoom ? L.latLng([522.7,111.4]) : L.latLng([373.8,189]);
 
     return (
       <div className="UI">
         <div onChange={this.onChangeValue} className="buttoncontainer">
           <label className="buttons">
             <input type="radio" value={false} name="where" /> Living Room
-            <input type="radio" value={true} name="where" /> Room
+            <input type="radio" value={true} name="where" defaultChecked={true}/> Room
           </label>
         </div>        
         <div className="map">
@@ -107,6 +108,7 @@ class HomeMap extends React.Component {
 
             <Beacon center={beacon1Center} radius={beaconRadius} name="BEACON 1 (7f2e)"/>
             <Beacon center={beacon2Center} radius={beaconRadius} name="BEACON 2 (9b69)"/>
+            <Beacon center={beacon3Center} radius={beaconRadius} name="BEACON 3 (ecb3)"/>
          
           </Map>
         </div>

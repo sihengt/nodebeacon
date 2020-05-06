@@ -1,0 +1,177 @@
+const noble = require('@abandonware/noble');
+const fs = require('fs');
+var app = require('express')();
+var http = require('http').createServer(app);
+var io = require('socket.io')(http);
+
+// Configuring Express and Socket.IO for setting up websocket connection to React.
+const port = 9000
+http.listen(port, () => {
+  console.log(`listening on *:${port}`)
+})
+
+// Setting up beacons.
+const beacon1mac = '3ca308ac7f2e';
+const beacon2mac = '3ca308ac9b69';
+const beacon3mac = '3ca308adecb3';
+const u = 3.72;
+
+// This is the basic Beacon class, which should hold memories of past values. It doesn't do any calculations (yet), it just stores.
+class Beacon {
+  constructor(mac){
+    this.id = mac;
+    this.memory = new Object();
+  }
+  have_memory(time){
+    if(this.memory[time]){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+  get_memory(time){
+    if (this.memory[time]){
+      return this.memory[time];
+    }
+    else {
+      return -1;
+    }
+  }
+  update_memory(time, distance){
+    if(this.memory[time]){
+      this.memory[time] = [...this.memory[time], distance]
+    }
+    else {
+      this.memory[time] = [distance];
+    }
+  // console.log("Updated memory ", this.memory);
+  }
+}
+
+Beacon1 = new Beacon(beacon1mac);
+Beacon2 = new Beacon(beacon2mac);
+Beacon3 = new Beacon(beacon3mac);
+
+noble.on('stateChange', function (state) {
+  if (state === 'poweredOn') {
+    console.log('Powered on, beginning scan.')
+    // noble.startScanning(['e2c56db5dffb48d2b060d0f5a71096e0'],true);
+    noble.startScanning([],true);
+  } else {
+    noble.stopScanning();
+  }
+});
+
+noble.on('discover', function (peripheral) {
+  var macAddress = peripheral.uuid;
+  var rssi = peripheral.rssi;
+  var localName = peripheral.advertisement.localName;
+  var calculatedDistance = calculateDistance(-66,rssi);
+  var current_time = Math.round((new Date()).getTime()/1000);
+
+  if (macAddress == "3ca308ac7f2e"){
+    console.log('Beacon 1');
+    console.log('Current unix time: ', current_time);
+    console.log('found device: ', macAddress,' ',localName,' ',rssi);
+    console.log('distance calculated: ', calculatedDistance);    
+    Beacon1.update_memory(current_time,calculatedDistance);
+    trilat(current_time);
+    console.log();
+  }
+
+  if (macAddress == "3ca308ac9b69"){
+    console.log('Beacon 2');
+    console.log('Current unix time: ', current_time);
+    console.log('found device: ', macAddress,' ',localName,' ',rssi);
+    console.log('distance calculated: ', calculatedDistance); 
+    Beacon2.update_memory(current_time, calculatedDistance);
+    trilat(current_time);
+    console.log();
+  }
+
+  // console.log(`peripheral discovered (${peripheral.id} with address <${peripheral.address}, ${peripheral.addressType}>, connectable ${peripheral.connectable}, RSSI ${peripheral.rssi}:`);
+  // console.log('\thello my local name is:');
+  // console.log(`\t\t${peripheral.advertisement.localName}`);
+  // console.log('\tcan I interest you in any of the following advertised services:');
+  // console.log(`\t\t${JSON.stringify(peripheral.advertisement.serviceUuids)}`);
+
+  // const serviceData = peripheral.advertisement.serviceData;
+  // if (serviceData && serviceData.length) {
+  //   console.log('\there is my service data:');
+  //   for (const i in serviceData) {
+  //     console.log(`\t\t${JSON.stringify(serviceData[i].uuid)}: ${JSON.stringify(serviceData[i].data.toString('hex'))}`);
+  //   }
+  // }
+  // if (peripheral.advertisement.manufacturerData) {
+  //   console.log('\there is my manufacturer data:');
+  //   console.log(`\t\t${JSON.stringify(peripheral.advertisement.manufacturerData.toString('hex'))}`);
+  // }
+  // if (peripheral.advertisement.txPowerLevel !== undefined) {
+  //   console.log('\tmy TX power level is:');
+  //   console.log(`\t\t${peripheral.advertisement.txPowerLevel}`);
+  // }
+});
+
+function trilat(time){
+  if ( (Beacon1.have_memory(time)) && (Beacon2.have_memory(time)) ){
+    console.log('ready to trilat.');
+    var r1 = Beacon1.get_memory(time); 
+    var r2 = Beacon2.get_memory(time);
+
+    var new_x = (r1**2 - r2**2 + u**2) / (2*u)
+    console.log("R1: ", r1, "R2: ", r2, "new_x: ", new_x);
+    
+    var temp = r1**2 - new_x**2;
+    if(temp<0){
+      temp=0;
+    }
+    var new_y = (Math.sqrt(temp))
+
+    console.log("Before x: ", new_x);
+    console.log("Before y: ", new_y);
+
+    new_x = 182 + (new_x / 0.014758)
+    new_y = 710 + (new_y / 0.014758)
+
+    console.log("New x: ", new_x);
+    console.log("New y: ", new_y);
+
+    let position = {
+      lng:Math.round(new_x),
+      lat:Math.round(new_y)
+    };
+
+    io.emit('updateData', position);
+    // io.on('connection', (socket) => {
+    //   console.log('Updating.')
+    //   console.log(position)
+    //   socket.emit('updateData', position);
+    // })  
+    
+    // app.get('/api', function(req, res){
+    // res.json({lat: new_y,
+    //           lng: new_x}
+    //         )
+    // })
+  }
+}
+
+// function calculateDistance(txPower,rssi){
+//   // got from this dude: https://stackoverflow.com/questions/20416218/understanding-ibeacon-distancing
+//   if(rssi==0){
+//     return -1; // as a sort of error code / cannot calculate distance.
+//   }
+
+//   var ratio = rssi / txPower;
+//   if (ratio < 1.0){
+//     return Math.pow(ratio,10);
+//   } else {
+//     return (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
+//   }
+// }
+
+const calculateDistance = (rssi, measuredPower, envConst) => {
+  let calculated = (-rssi - measuredPower)/(10*envConst)
+  return Math.pow(10,calculated)
+}

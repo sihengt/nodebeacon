@@ -23,14 +23,14 @@ noble.on('discover', function (peripheral) {
   var macAddress = peripheral.uuid;
   var rssi = peripheral.rssi;
   var localName = peripheral.advertisement.localName;
-  console.log('found device: ', macAddress,' ',localName, ' ',rssi);
+  // console.log('found device: ', macAddress,' ',localName, ' ',rssi);
 
-  // if (macAddress == "3ca308ac7f2e"){
-  //   console.log('Beacon 1');
-  //   console.log('found device: ', macAddress,' ',rssi);
-  //   console.log('Calculated distance: ', calculateDistance(-66,rssi))
-  //   // logData(rssi, filePath);
-  // }
+  if (macAddress == "94e36d6215f0"){
+    console.log('Beacon 1');
+    console.log('found device: ', macAddress,' ',rssi);
+    // console.log('Calculated distance: ', calculateDistance(-66,rssi))
+    // logData(rssi, filePath);
+  }
 
   //-52.013
 });

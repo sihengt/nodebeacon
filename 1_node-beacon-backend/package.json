@@ -10,8 +10,11 @@
   "license": "ISC",
   "dependencies": {
     "@abandonware/noble": "^1.9.2-8",
+    "@tensorflow/tfjs-node": "^1.7.4",
+    "@tensorflow/tfjs-node-gpu": "^1.7.4",
     "express": "^4.17.1",
     "leaflet": "^1.6.0",
+    "mathjs": "^6.6.5",
     "node-beacon-scanner": "^0.2.2",
     "socket.io": "^2.3.0",
     "ws": "^7.2.5"

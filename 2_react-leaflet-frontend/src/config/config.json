@@ -1,0 +1,128 @@
+{	
+	"0":
+		{
+			"_where": "Living room",
+			"map":
+				{
+					"x_max_px":321,
+					"y_max_px":606,
+					"m_to_px":0.020872
+				},
+			"beacon1":
+				{
+					"mac": "3ca308ac7f69",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px": 300,
+					"y_px": 23.5
+				},
+			"beacon2":
+				{
+					"mac": "94e36d6215f0",
+					"relative_x_m": -5.82,
+					"relative_y_m": 4.44,
+					"x_px": 21,
+					"y_px": 236
+				},
+			"beacon3":
+				{
+					"mac": "3ca308ac9f0f",
+					"relative_x_m": -2.317,
+					"relative_y_m": 7.31,
+					"x_px":189,
+					"y_px":373.8
+				},
+			"beacon4":
+				{
+					"mac":"",
+					"relative_x_m":0,
+					"relative_y_m":0,
+					"x_px":0,
+					"y_px":0
+				}
+		},
+	"1":
+		{
+			"_where": "Room",
+			"map":
+				{
+					"x_max_px":454,
+					"y_max_px":728,
+					"m_to_px":0.014758
+				},
+			"beacon1":
+				{
+					"mac": "3ca308ac7f2e",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px": 272,
+					"y_px": 710
+				},
+			"beacon2":
+				{
+					"mac": "3ca308ac9b69",
+					"relative_x_m": -3.72,
+					"relative_y_m": 0,
+					"x_px": 20,
+					"y_px": 710
+				},
+			"beacon3":
+				{
+					"mac": "3ca308adecb3",
+					"relative_x_m": -2.37,
+					"relative_y_m": -3.873,
+					"x_px":111.4,
+					"y_px":522.7
+				},
+			"beacon4":
+				{
+					"mac": "3ca308ac9f0f",
+					"relative_x_m": -0.635,
+					"relative_y_m": -2.937,
+					"x_px":111.4,
+					"y_px":522.7
+				}
+		},
+	"2":
+		{
+			"_where": "DIC",
+			"map":
+				{
+					"x_max_px":2232,
+					"y_max_px":2252,
+					"m_to_px":0
+				},
+			"beacon1":
+				{
+					"mac": "",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px": 0,
+					"y_px": 0
+				},
+			"beacon2":
+				{
+					"mac": "",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px": 0,
+					"y_px": 0
+				},
+			"beacon3":
+				{
+					"mac": "",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px":0,
+					"y_px":0
+				},
+			"beacon4":
+				{
+					"mac": "",
+					"relative_x_m": 0,
+					"relative_y_m": 0,
+					"x_px":0,
+					"y_px":0
+				}
+		}
+}

@@ -4,7 +4,7 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const tf = require('@tensorflow/tfjs-node')
-const configFileName = 'room.config'
+const configFileName = 'livingroom.config'
 // Configuring Express and Socket.IO for setting up websocket connection to React.
 const port = 9000
 http.listen(port, () => {

@@ -78,11 +78,13 @@ class HomeMap extends React.Component {
     const beacon1Center = this.state.yourRoom ? L.latLng([710,272]) : L.latLng([23.5,300]);
     const beacon2Center = this.state.yourRoom ? L.latLng([710,20]) : L.latLng([236,21]);
     const beacon3Center = this.state.yourRoom ? L.latLng([522.7,111.4]) : L.latLng([373.8,189]);
-    const beacon4Center = this.state.yourRoom ? L.latLng([511,229]) : L.latLng([0,0]);
+    const beacon4Center = this.state.yourRoom ? L.latLng([511,229]) : L.latLng([50,34]);
+    const beacon5Center = this.state.yourRoom ? L.latLng([0,0]) : L.latLng([440,31]);
     const beacon1Name = this.state.yourRoom ? "BEACON 1 (7f2e)" : "BEACON 1 (7f69)"
-    const beacon2Name = this.state.yourRoom ? "BEACON 2 (9b69)" : "BEACON 2 (9f0f)"
-    const beacon3Name = this.state.yourRoom ? "BEACON 3 (ecb3)" : "BEACON 3 (15f0)"
-    const beacon4Name = this.state.yourRoom ? "BEACON 4 (9f0f)" : "BEACON 4 (????)"
+    const beacon2Name = this.state.yourRoom ? "BEACON 2 (9b69)" : "BEACON 2 (15f0)"
+    const beacon3Name = this.state.yourRoom ? "BEACON 3 (ecb3)" : "BEACON 3 (9f0f)"
+    const beacon4Name = this.state.yourRoom ? "BEACON 4 (9f0f)" : "BEACON 4 (ecb3)"
+    const beacon5Name = this.state.yourRoom ? "BEACON 5 (????)" : "BEACON 5 (9b69)"
 
     return (
       <div className="UI">
@@ -115,6 +117,7 @@ class HomeMap extends React.Component {
             <Beacon center={beacon2Center} radius={beaconRadius} name={beacon2Name}/>
             <Beacon center={beacon3Center} radius={beaconRadius} name={beacon3Name}/>
             <Beacon center={beacon4Center} radius={beaconRadius} name={beacon4Name}/>
+            <Beacon center={beacon5Center} radius={beaconRadius} name={beacon5Name}/>
          
           </Map>
         </div>

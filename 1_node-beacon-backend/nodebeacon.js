@@ -4,7 +4,8 @@ const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const tf = require('@tensorflow/tfjs-node')
-const configFileName = 'livingroom.config'
+const configFileName = 'dtta.config'
+
 // Configuring Express and Socket.IO for setting up websocket connection to React.
 const port = 9000
 http.listen(port, () => {
@@ -67,6 +68,7 @@ for (var property in configFile) {
 
 // BEGIN WORK!
 noble.on('stateChange', function (state) {
+  console.log(state);
   if (state === 'poweredOn') {
     console.log('Powered on, beginning scan.')
     // noble.startScanning(['e2c56db5dffb48d2b060d0f5a71096e0'],true);
@@ -96,7 +98,7 @@ noble.on('discover', function (peripheral) {
 const interval = setInterval(printSomething = () => {
   console.log("Being called.");
   prepData(trilat);
-}, 2000);
+}, 3000);
 
 const prepData = async (trilat) => {
   beacon_data = new Object();
@@ -113,7 +115,7 @@ const prepData = async (trilat) => {
   }
   n_beacons = Object.keys(beacon_data).length;
   // you shouldn't clear beacon memory and call trilat if there are 3 keys. you should do it if there are 3 keys AFTER removing outliers.
-  if (n_beacons >= 3){ // as long as there're more than 3 beacons, let's GO!
+  if (n_beacons >=1){ // as long as there're more than 3 beacons, let's GO!
     clear_all_beacon_memory();
     trilat(beacon_data);
   }
@@ -122,7 +124,7 @@ const prepData = async (trilat) => {
 const removeOutliers = async (x) => {
   mean = tf.mean(x);
   std = tf.moments(x).variance.sqrt();
-  z_mask = tf.less(tf.div(tf.sub(x,mean),std), 3);
+  z_mask = tf.less(tf.div(tf.sub(x,mean),std), 1.5);
   const result = await tf.booleanMaskAsync(x,z_mask);
   return result;
 }
@@ -144,7 +146,7 @@ const trilat = (beacon_data) => {
   let w_sum = 0;
   let x_calculated = 0;
   let y_calculated = 0;
-  const g = 1.2;
+  const g = 1.5;
   for (let beacon_number in beacon_data) {
     r[beacon_number] = tf.mean(beacon_data[beacon_number]).dataSync()[0];
   }
@@ -173,7 +175,7 @@ const trilat = (beacon_data) => {
 
   console.log("calculated x,y are (",x_calculated, ",",y_calculated,").");  
   new_x = beacon1_x_px + (x_calculated / m_to_px)
-  new_y = Math.min(beacon1_y_px + (y_calculated / m_to_px),710)
+  new_y = beacon1_y_px + (y_calculated / m_to_px)
   console.log("x,y are (",new_x, ",",new_y,").");
 
   let position = {

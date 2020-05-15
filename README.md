@@ -14,7 +14,10 @@ This repo consists of two parts:
   - Uses react + leaflet
   - Receives updates through socket.io
 
-3. *3_studies*
+3. *3_android-beacon-backend*
+  - node + socket.io to receive information from an android app instead of the unreliable laptop BT adapter.
+
+4. *4_studies*
   - Some relevant studies + gifs, in no particular order.
 
 ![WCL](https://github.com/seeeheng/nodebeacon/blob/master/wcl.gif)

@@ -14,4 +14,7 @@ This repo consists of two parts:
   - Uses react + leaflet
   - Receives updates through socket.io
 
+3. *3_studies*
+  - Some relevant studies + gifs, in no particular order.
+
 ![WCL](https://github.com/seeeheng/nodebeacon/blob/master/wcl.gif)

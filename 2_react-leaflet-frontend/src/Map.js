@@ -100,8 +100,9 @@ const beaconCenters = parseBeaconCenters(configFile);
 const mapBounds = parseMapBounds(configFile);
 const mapCenters = parseMapCenters(configFile);
 
-console.log(mapBounds)
-console.log(mapCenters)
+console.log(beaconCenters);
+// console.log(mapBounds)
+// console.log(mapCenters)
 
 class HomeMap extends React.Component {
   constructor(props){
@@ -147,7 +148,6 @@ class HomeMap extends React.Component {
   render() {
     const position = [this.state.lat, this.state.lng]
     const filepath = this.state.maps[this.state.location];
-    
     const corner1 = L.latLng([0,0]);
     const corner2 = this.state.map_bounds[this.state.location];
     const bounds = L.latLngBounds(corner2,corner1)
@@ -188,9 +188,7 @@ class HomeMap extends React.Component {
 
             <Beacon center={this.state.beacon_center[1][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[1][this.state.location]}/>
             <Beacon center={this.state.beacon_center[2][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[2][this.state.location]}/>
-            <Beacon center={this.state.beacon_center[3][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[3][this.state.location]}/>
-            <Beacon center={this.state.beacon_center[4][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[4][this.state.location]}/>
-         
+            <Beacon center={this.state.beacon_center[3][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[3][this.state.location]}/>         
           </Map>
         </div>
       </div>

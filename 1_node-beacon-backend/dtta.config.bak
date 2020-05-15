@@ -1,0 +1,72 @@
+{
+	"map":
+		{
+			"x_max_px":2736,
+			"y_max_px":2128,
+			"m_to_px": 0.02632
+		},
+	"beacon1":
+		{
+			"mac": "3ca308ac9138",
+			"relative_x_m": 0,
+			"relative_y_m": 0,
+			"x_px": 1042,
+			"y_px": 543
+		},
+	"beacon2":
+		{
+			"mac": "94e36d621e25",
+			"relative_x_m": -15.3,
+			"relative_y_m": 20.25,
+			"x_px": 460.6,
+			"y_px": 1312.5
+		},
+	"beacon3":
+		{
+			"mac": "3ca308ac7f69",
+			"relative_x_m": -5.67,
+			"relative_y_m": 30.375,
+			"x_px":826.54,
+			"y_px":1697.25
+		},
+	"beacon4":
+		{
+			"mac": "3ca308ac9f0f",
+			"relative_x_m": 3.15,
+			"relative_y_m": 19.35,
+			"x_px":1161.7,
+			"y_px":1278.3
+		},
+	"beacon5":
+		{
+			"mac": "94e36d6215f0",
+			"relative_x_m": 11.25,
+			"relative_y_m": 6.1,
+			"x_px":1469.5,
+			"y_px":850.8
+		},
+	"beacon6":
+		{
+			"mac": "3ca308adecb3",
+			"relative_x_m": 19.8,
+			"relative_y_m": 4.05,
+			"x_px":1794.4,
+			"y_px":696.9
+		},
+	"beacon7":
+		{
+			"mac": "3ca308ac9b69",
+			"relative_x_m": 28.8,
+			"relative_y_m": 9.45,
+			"x_px":2136.4,
+			"y_px":902.1
+		},
+	"beacon8":
+		{
+			"mac": "3ca308ac7f2e",
+			"relative_x_m": 29.025,
+			"relative_y_m": 23.4,
+			"x_px":2144.95,
+			"y_px":1432.2
+		}
+}

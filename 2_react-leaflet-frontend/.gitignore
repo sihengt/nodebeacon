@@ -4,6 +4,7 @@
 /node_modules
 /.pnp
 .pnp.js
+/src/config/maps/dicpart1.jpg
 
 # testing
 /coverage

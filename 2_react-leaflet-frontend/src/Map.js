@@ -7,6 +7,7 @@ import livingRoomPicture from './config/maps/livingroom.png'
 import DICPicture from './config/maps/dicpart1.jpg'
 import socketIOClient from "socket.io-client";
 import configFile from "./config/config.json"
+import { DriftMarker} from "leaflet-drift-marker"
 
 // Some initializing setup due to bugs in react-leaflet. This allows icons to properly show.
 delete L.Icon.Default.prototype._getIconUrl;
@@ -25,7 +26,7 @@ const Beacon  = (props) => {
     <Circle
       center={props.center}
       radius={props.radius}>
-      <Tooltip direction='right' permanent>{props.name}</Tooltip>
+      <Tooltip direction='right'>{props.name}</Tooltip>
     </Circle>
   );
 }
@@ -120,14 +121,14 @@ class HomeMap extends React.Component {
 
   componentDidMount(){
     console.log("About to fetch.")
-    // const socket = socketIOClient(ENDPOINT)
-    // socket.on("updateData", data => {
-    //   console.log(data);
-    //   this.setState({
-    //     lat: data.lat,
-    //     lng: data.lng,
-    //   });
-    // });
+    const socket = socketIOClient(ENDPOINT)
+    socket.on("updateData", data => {
+      console.log(data);
+      this.setState({
+        lat: data.lat,
+        lng: data.lng,
+      });
+    });
   }
 
   componentWillUnmount(){
@@ -178,11 +179,12 @@ class HomeMap extends React.Component {
               bounds={bounds}
             />
 
-            <Marker position={position}>
-              <Popup>
-                You are here. <br />
-              </Popup>
-            </Marker>
+            <DriftMarker
+                // if position changes, marker will drift its way to new position
+                position={position}
+                duration={1000}>
+                <Popup> You are here. </Popup>
+            </DriftMarker>
 
             <Beacon center={this.state.beacon_center[1][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[1][this.state.location]}/>
             <Beacon center={this.state.beacon_center[2][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[2][this.state.location]}/>

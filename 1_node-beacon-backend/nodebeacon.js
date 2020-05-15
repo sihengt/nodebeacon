@@ -11,7 +11,6 @@ http.listen(port, () => {
   console.log(`listening on *:${port}`)
 })
 
-
 // This is the updated Beacon class.
 // Its memory is basically just a queue.
 class Beacon {

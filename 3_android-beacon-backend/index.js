@@ -17,13 +17,15 @@ app.get('/', (req, res) => {
 io.on('connection', (socket) => {
 	console.log("Connected.");
 	socket.on('new message', (data) =>{
-		// console.log(data);
+		console.log(data);
+
 		for (var beaconNumber in beacon_mac){
 			if (beacon_mac[beaconNumber] == data.mac){
 				// console.log(`\x1b[3${beaconNumber}m<Beacon ${beaconNumber}>`, '\x1b[0m', 'Distance: ', data.distance);
 				beacon_list[beaconNumber].update_memory(data.distance);
 			}
 		}
+
 	});
 })
 

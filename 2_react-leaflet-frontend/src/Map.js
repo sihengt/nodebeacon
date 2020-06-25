@@ -1,13 +1,13 @@
 import React from "react";
-import { Map, Marker, Circle, Popup, Tooltip, ImageOverlay} from "react-leaflet";
-import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import roomPicture from './config/maps/room.png'
-import livingRoomPicture from './config/maps/livingroom.png'
-import DICPicture from './config/maps/dicpart1.jpg'
-import socketIOClient from "socket.io-client";
-import configFile from "./config/config.json"
+import { Map, Popup, ImageOverlay} from "react-leaflet";
 import { DriftMarker} from "leaflet-drift-marker"
+import configFile from "./config/config.json"
+import roomPicture from './Assets/maps/room.png'
+import livingRoomPicture from './Assets/maps/livingroom.png'
+import DICPicture from './Assets/maps/diccroppedmay18.png'
+import Beacon from "./Components/Beacon"
+import Parsers from "./Components/Parsers"
 
 // Some initializing setup due to bugs in react-leaflet. This allows icons to properly show.
 delete L.Icon.Default.prototype._getIconUrl;
@@ -17,96 +17,17 @@ L.Icon.Default.mergeOptions({
     shadowUrl: require('leaflet/dist/images/marker-shadow.png')
 });
 
-// Some startup constants
-const ENDPOINT = "http://127.0.0.1:9000";
-
-// Initializing function to add more beacons.
-const Beacon  = (props) => {
-  return (
-    <Circle
-      center={props.center}
-      radius={props.radius}>
-      <Tooltip direction='right'>{props.name}</Tooltip>
-    </Circle>
-  );
-}
-
-let maps = new Object({0:livingRoomPicture, 1:roomPicture, 2:DICPicture})
-
-// TODO: Move this into mounting.
-const parseBeaconNumbers = (configFile) => {
-  console.log("Now parsing beacon names from config file.")
-  let beaconNames = new Object();
-  for (var roomNumber in configFile) {
-    for (var property in configFile[roomNumber]){
-      if (property.startsWith("beacon")){
-        let beacon_number = property.slice(property.length-1); // getting the beacon number from the config file.
-        if (typeof beaconNames[beacon_number] == 'undefined'){ // reading config file, checking if beacon array exists. If doesn't, initialize.
-          beaconNames[beacon_number] = [];
-        }
-        let beacon_name = configFile[roomNumber][property]["mac"];
-        beacon_name = beacon_name.slice(beacon_name.length-4); // keeping only last 4 letters
-        beacon_name = "BEACON " + beacon_number + " (" + beacon_name + ")"
-        beaconNames[beacon_number].push(beacon_name)
-      }
-    }
-  }
-  return beaconNames;
-}
-
-const parseBeaconCenters = (configFile) => {
-  console.log("Now parsing beacon locations from config file.")
-  let beaconCenters = new Object();
-  for (var roomNumber in configFile) {
-    for (var property in configFile[roomNumber]){
-      if (property.startsWith("beacon")){
-        let beacon_number = property.slice(property.length-1); // getting the beacon number from the config file.
-        if (typeof beaconCenters[beacon_number] == 'undefined'){ // reading config file, checking if beacon array exists. If doesn't, initialize.
-          beaconCenters[beacon_number] = [];
-        }
-        let beacon_x = configFile[roomNumber][property]["x_px"];
-        let beacon_y = configFile[roomNumber][property]["y_px"];
-        beaconCenters[beacon_number].push([beacon_y,beacon_x])
-      }
-    }
-  }
-  return beaconCenters;
-}
-
-const parseMapBounds = (configFile) => {
-  console.log("Now parsing beacon locations from config file.")
-  let mapBounds = new Object();
-  for (var roomNumber in configFile) {
-    let x_max_px = configFile[roomNumber]["map"]["x_max_px"];
-    let y_max_px = configFile[roomNumber]["map"]["y_max_px"];
-    mapBounds[roomNumber] = [y_max_px, x_max_px];
-  }
-  return mapBounds;
-}
-
-const parseMapCenters = (configFile) => {
-  console.log("Now parsing beacon locations from config file.")
-  let mapCenters = new Object();
-  for (var roomNumber in configFile) {
-    let x_max_px = configFile[roomNumber]["map"]["x_max_px"];
-    let y_max_px = configFile[roomNumber]["map"]["y_max_px"];
-    mapCenters[roomNumber] = [y_max_px/2, x_max_px/2];
-  }
-  return mapCenters;
-}
-
-const beaconNames = parseBeaconNumbers(configFile);
-const beaconCenters = parseBeaconCenters(configFile);
-const mapBounds = parseMapBounds(configFile);
-const mapCenters = parseMapCenters(configFile);
-
-console.log(beaconCenters);
-// console.log(mapBounds)
-// console.log(mapCenters)
+const ENDPOINT = "http://localhost:9000";
+const maps = {0:livingRoomPicture, 1:roomPicture, 2:DICPicture}
+const beaconNames = Parsers.parseBeaconNumbers(configFile);
+const beaconCenters = Parsers.parseBeaconCenters(configFile);
+const mapBounds = Parsers.parseMapBounds(configFile);
+const mapCenters = Parsers.parseMapCenters(configFile);
 
 class HomeMap extends React.Component {
   constructor(props){
     super(props);
+    this.socket = null;
     this.state = {
       lat: 0, // these coordinates are center of the room. 
       lng: 0,
@@ -116,33 +37,33 @@ class HomeMap extends React.Component {
       beacon_center: beaconCenters,
       map_bounds: mapBounds,
       map_centers: mapCenters,
-      maps: maps
+      maps: maps    
     };
   }
 
   componentDidMount(){
-    console.log("About to fetch.")
-    const socket = socketIOClient(ENDPOINT)
-    socket.on("updateData", data => {
-      console.log(data);
-      this.setState({
-        lat: data.lat,
-        lng: data.lng,
-      });
-    });
+    this.socket = new WebSocket("ws://localhost:9000");
+    this.socket.onopen = () => {
+      this.socket.send("test"); //Will work here!
+      this.socket.send("hello!");
+    }
+    this.socket.onmessage = (message_in) => {
+      console.log(message_in);
+      try {
+        let obj = JSON.parse(message_in.data);
+        this.setState(obj);  
+      } catch(err) { console.log("Not a json: ", message_in.data)}
+    }
   }
 
   componentWillUnmount(){
-    const socket = socketIOClient(ENDPOINT)
-    socket.close();
+    this.socket.close();
   }
 
   onChangeValue = (event) => {
-    // var isTrue = (event.target.value === 'true');
     this.setState({
       location: event.target.value,
     });
-    console.log(this.state)
   }
 
   render() {
@@ -168,27 +89,22 @@ class HomeMap extends React.Component {
           <Map 
             center={center} 
             scrollWheelZoom={false}
-            doubleClickZoom={false} 
             zoom={this.state.zoom}
+            zoomDelta={0.25}
+            zoomSnap={0}
             minZoom={-2}
-            zoomSnap={0.125}
             crs={L.CRS.Simple}>
-            
             <ImageOverlay
               url={filepath}
               bounds={bounds}
             />
-
             <DriftMarker
                 // if position changes, marker will drift its way to new position
                 position={position}
                 duration={1000}>
                 <Popup> You are here. </Popup>
             </DriftMarker>
-
             <Beacon center={this.state.beacon_center[1][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[1][this.state.location]}/>
-            <Beacon center={this.state.beacon_center[2][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[2][this.state.location]}/>
-            <Beacon center={this.state.beacon_center[3][this.state.location]} radius={beaconRadius} name={this.state.beacon_name[3][this.state.location]}/>         
           </Map>
         </div>
       </div>

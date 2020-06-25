@@ -65,7 +65,7 @@ code {
 .leaflet-container {
   height: 80vh;
   width: 100%;
-  background-color:#111;
+  background-color:#111!important;
 }
 
 .center {

@@ -15,7 +15,7 @@
     "leaflet": "^1.6.0",
     "mathjs": "^6.6.5",
     "node-beacon-scanner": "^0.2.2",
-    "socket.io": "^2.3.0",
+    "socket.io": "^2.5.0",
     "ws": "^7.2.5"
   }
 }
